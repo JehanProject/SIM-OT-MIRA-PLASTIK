@@ -7,9 +7,8 @@ akun root MariaDB untuk aplikasi.
 
 1. Buat basis data lokal dan akun pengguna yang aksesnya dibatasi hanya ke basis
    data tersebut. Jangan simpan kata sandi di sistem kendali versi.
-2. Salin `env` menjadi `.env`, atur `CI_ENVIRONMENT = development`, atur
-   `app.baseURL` ke URL aplikasi lokal (termasuk garis miring di akhir), lalu
-   atur
+2. Salin `env.example` menjadi `.env`, atur `CI_ENVIRONMENT = development`,
+   atur `app.baseURL` ke URL aplikasi lokal (termasuk garis miring di akhir), lalu atur
    `database.default.hostname`, `database.default.database`,
    `database.default.username`, `database.default.password`, dan
    `database.default.port`.
@@ -29,9 +28,129 @@ akun root MariaDB untuk aplikasi.
    pengelola kata sandi yang disetujui. Jangan berikan kata sandi sebagai
    argumen baris perintah.
 
-Untuk staging dan produksi, gunakan `CI_ENVIRONMENT = production`, atur
-`app.baseURL` ke URL HTTPS, dan pastikan `app.forceGlobalSecureRequests = true`.
-Cookie produksi ditandai Secure.
+## Deployment staging dan produksi
+
+Gunakan `CI_ENVIRONMENT = production` juga pada staging agar detail error dan
+debug toolbar tidak ditampilkan. Konfigurasi harus berbeda per lingkungan;
+jangan salin `.env` lokal ke server atau masukkan nilai rahasia ke repositori.
+
+Contoh `.env` staging tanpa kredensial nyata:
+
+```ini
+CI_ENVIRONMENT = production
+app.baseURL = 'https://staging.example.invalid/'
+app.forceGlobalSecureRequests = true
+cookie.secure = true
+cookie.httponly = true
+cookie.samesite = Lax
+session.expiration = 1800
+database.default.hostname = DB_HOST_FROM_SECRET_MANAGER
+database.default.database = mira_plastik
+database.default.username = DB_USER_FROM_SECRET_MANAGER
+database.default.password = DB_PASSWORD_FROM_SECRET_MANAGER
+database.default.DBDriver = MySQLi
+database.default.port = 3306
+```
+
+Ganti `.invalid` dengan domain staging HTTPS yang benar dan isi nilai database
+dari secret manager saat deployment. Akun database aplikasi harus terpisah dari
+root dan hanya memiliki hak pada database aplikasi. Konfigurasi menolak mode
+production jika URL bukan HTTPS/non-local, HTTPS tidak dipaksa, atau cookie
+tidak Secure.
+
+Pada konfigurasi PHP produksi, gunakan `expose_php=Off`,
+`display_errors=Off`, dan `log_errors=On`. Simpan error log di lokasi yang
+tidak dapat diunduh melalui web dan batasi aksesnya.
+
+Arahkan document root hanya ke direktori `public`. Apache harus mengaktifkan
+`mod_rewrite` dan `mod_headers`, mengizinkan `.htaccess` di `public`, serta
+memberi akses web hanya ke direktori itu. `.htaccess` di root proyek menolak
+seluruh akses jika root proyek keliru dijadikan document root. Untuk Nginx,
+gunakan `root .../public`, `try_files $uri $uri/ /index.php?$query_string;`,
+tolak dotfiles (kecuali jalur ACME yang memang diperlukan), dan tolak akses ke
+`/app`, `/system`, `/writable`, `/vendor`, `/tests`, `/docs`, `.env`, `.git`,
+`composer.*`, dan `spark`.
+
+Pasang sertifikat TLS yang valid di web server. Aktifkan HSTS hanya pada virtual
+host HTTPS: mulai dengan `max-age=300` di staging, lalu tingkatkan ke
+`max-age=31536000` di production setelah seluruh hostname diuji. Jangan
+menambahkan `includeSubDomains` atau preload sebelum semua subdomain dipastikan
+selalu memakai HTTPS. Jika TLS dihentikan di reverse proxy, proxy harus
+menimpa `X-Forwarded-Proto`; percayai hanya alamat proxy yang dikonfigurasi
+secara eksplisit di `Config\App::$proxyIPs`.
+
+Redirect HTTP ke HTTPS di web server, bukan hanya di aplikasi: filter aplikasi
+tidak menangani file statis yang disajikan langsung oleh web server. Gunakan
+hostname kanonis tetap pada redirect, bukan nilai `Host` sembarang dari request.
+Contoh konfigurasi Apache:
+
+```apache
+<VirtualHost *:80>
+    ServerName staging.example.invalid
+    Redirect permanent / https://staging.example.invalid/
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName staging.example.invalid
+    DocumentRoot /path/to/project/public
+    # Konfigurasi TLS dan PHP-FPM/mod_php diletakkan di sini.
+<IfModule mod_headers.c>
+    Header always set Strict-Transport-Security "max-age=300"
+</IfModule>
+</VirtualHost>
+```
+
+Contoh ekuivalen Nginx (ganti hostname dan path dengan nilai deployment):
+
+```nginx
+server {
+    listen 80;
+    server_name staging.example.invalid;
+    return 301 https://staging.example.invalid$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name staging.example.invalid;
+    root /path/to/project/public;
+    add_header Strict-Transport-Security "max-age=300" always;
+    # Konfigurasi TLS dan PHP-FPM diletakkan di sini.
+}
+```
+
+Pada production, ubah `max-age` menjadi `31536000` setelah staging dan seluruh
+hostname deployment lolos verifikasi. CodeIgniter mengirim HSTS pada redirect
+HTTP, tetapi browser hanya menerima kebijakan HSTS melalui koneksi HTTPS;
+karena itu tetap atur header pada virtual host TLS.
+
+## Checklist verifikasi deployment
+
+- [ ] `CI_ENVIRONMENT` bernilai `production`; `app.baseURL` memakai domain
+      staging/production yang benar dan skema HTTPS.
+- [ ] HTTP, termasuk URL file statis, dialihkan ke HTTPS; request HTTPS
+      mengembalikan HSTS dari web server.
+- [ ] Cookie sesi dan CSRF memiliki `Secure`, `HttpOnly`, dan `SameSite=Lax`.
+- [ ] Response memuat `X-Frame-Options`, `X-Content-Type-Options`,
+      `Referrer-Policy`, serta header HSTS.
+- [ ] Form POST tanpa token CSRF ditolak; form dan permintaan API bertoken
+      tetap berfungsi.
+- [ ] Request ke `/.env`, `/.git/config`, `/composer.json`, `/app/...`,
+      `/system/...`, `/writable/...`, dan `/vendor/...` tidak mengembalikan
+      konten file (hasil yang diharapkan: 403 atau 404).
+- [ ] Document root adalah `public`; directory listing nonaktif; mode
+      production tidak menampilkan stack trace atau debug toolbar.
+- [ ] `expose_php` nonaktif; error detail disembunyikan dari browser dan dicatat
+      hanya ke log yang tidak dapat diakses publik.
+- [ ] `.env` dan `.env.*` diabaikan Git (`git check-ignore -v .env
+      .env.staging`); template hanya berisi placeholder. Jangan commit dump
+      database atau file backup.
+- [ ] Database memakai akun aplikasi non-root dengan hak minimum. Buat Owner
+      produksi melalui `php spark owner:create`; jangan jalankan seeder akun
+      development.
+
+Content Security Policy belum diaktifkan. Uji dahulu di staging dalam mode
+report-only dan tinjau skrip/style inline sebelum menerapkan kebijakan yang
+memblokir konten.
 
 API autentikasi menyimpan hash kata sandi menggunakan bcrypt di PHP. Lima kali
 percobaan kata sandi yang gagal akan mengunci akun selama 15 menit. Sesi

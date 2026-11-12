@@ -36,7 +36,7 @@ Bootstrap 5.3.8 disimpan lokal di `public/assets/vendor/bootstrap`. CSS bersama 
 2. Salin file konfigurasi contoh dan edit `.env`:
 
    ```powershell
-   Copy-Item env .env
+   Copy-Item env.example .env
    ```
 
    Atur environment lokal, URL aplikasi, dan koneksi database. Contoh nilai koneksi:
@@ -52,7 +52,7 @@ Bootstrap 5.3.8 disimpan lokal di `public/assets/vendor/bootstrap`. CSS bersama 
    database.default.port = 3306
    ```
 
-   Ganti username dan password dengan kredensial lokal Anda. Jangan masukkan `.env` atau kredensial ke kontrol versi.
+   Ganti username dan password dengan kredensial lokal Anda. Jangan masukkan `.env`, dump database, atau kredensial ke kontrol versi.
 
 3. Buat skema dan data awal dengan mengimpor [`mira_plastik.sql`](app/Database/mira_plastik.sql) ke MySQL/MariaDB. Skrip ini membuat database `mira_plastik` jika belum ada.
 
@@ -93,8 +93,6 @@ Alur pengajuan dan persetujuan Void/Retur telah ditambahkan. Sebelum digunakan p
 
 ## Deployment dan Keamanan
 
-- Arahkan document root web server ke folder `public`, bukan ke root proyek.
-- Gunakan `CI_ENVIRONMENT = production` dan HTTPS untuk deployment.
-- Batasi akses ke `.env` dan folder `writable`; jangan menyimpan kredensial database di file yang dapat diunduh publik.
+- Ikuti [panduan staging dan produksi](docs/development-setup.md#deployment-staging-dan-produksi).
 - Cadangkan database secara berkala sebelum menjalankan perubahan skema atau operasi data.
 - Backup JSON dapat dibuat manual oleh Owner dari halaman **Backup & Restore** atau melalui `php spark backup:create`. File disimpan di `writable/backups`, hanya dapat diakses Owner, dan perintah CLI membersihkan backup yang berumur lebih dari 30 hari. Untuk backup harian otomatis, jadwalkan perintah CLI tersebut melalui Task Scheduler Windows atau cron; aplikasi tidak mengaktifkan scheduler sistem secara otomatis. Pemulihan mensyaratkan konfirmasi teks dan membuat backup pengaman terlebih dahulu.

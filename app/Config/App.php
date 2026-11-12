@@ -157,7 +157,7 @@ class App extends BaseConfig
      * secure, the user will be redirected to a secure version of the page
      * and the HTTP Strict Transport Security (HSTS) header will be set.
      */
-    public bool $forceGlobalSecureRequests = false;
+    public bool $forceGlobalSecureRequests = ENVIRONMENT === 'production';
 
     /**
      * --------------------------------------------------------------------------
@@ -199,4 +199,27 @@ class App extends BaseConfig
      * @see http://www.w3.org/TR/CSP/
      */
     public bool $CSPEnabled = false;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        if (ENVIRONMENT !== 'production') {
+            return;
+        }
+
+        $host = parse_url($this->baseURL, PHP_URL_HOST);
+
+        if (
+            parse_url($this->baseURL, PHP_URL_SCHEME) !== 'https'
+            || ! is_string($host)
+            || $host === ''
+            || in_array(strtolower($host), ['localhost', '127.0.0.1', '::1', '[::1]'], true)
+            || ! $this->forceGlobalSecureRequests
+        ) {
+            throw new \RuntimeException(
+                'Production requires an HTTPS app.baseURL on a non-local host and app.forceGlobalSecureRequests=true.',
+            );
+        }
+    }
 }

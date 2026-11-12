@@ -1,4 +1,5 @@
 /.env
+/.env.*
 /env
 /.mcp.json
 /vendor/
@@ -18,5 +19,6 @@
 /ALUR_KERJA_DAN_PROGRES.md
 /Untitled.png
 /out_*.txt
+/mira_plastik.sql
 /public/Laporan_MPSI_Revisi*.pdf
 /public/Laporan_MPSI_Revisi*.docx
