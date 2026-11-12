@@ -37,30 +37,24 @@ class Receivables extends BaseController
              ORDER BY (piutang.due_date IS NULL), piutang.due_date, piutang.receivable_id",
         )->getResultArray();
         $today = date('Y-m-d');
-        $reminderCutoff = (new \DateTimeImmutable($today))->modify('+7 days')->format('Y-m-d');
         $reminders = [
             'overdue' => [],
             'due_today' => [],
-            'upcoming' => [],
         ];
         foreach ($receivables as $receivable) {
-            if ($receivable['due_date'] === null || (float) $receivable['outstanding_amount'] <= 0) {
+            if ($receivable['due_date'] === null
+                || $receivable['due_date'] > $today
+                || (float) $receivable['outstanding_amount'] <= 0) {
                 continue;
             }
 
-            if ($receivable['due_date'] < $today) {
-                $reminders['overdue'][] = $receivable;
-            } elseif ($receivable['due_date'] === $today) {
-                $reminders['due_today'][] = $receivable;
-            } elseif ($receivable['due_date'] <= $reminderCutoff) {
-                $reminders['upcoming'][] = $receivable;
-            }
+            $reminderType = $receivable['due_date'] === $today ? 'due_today' : 'overdue';
+            $reminders[$reminderType][] = $receivable;
         }
 
         return view('receivables/index', [
             'receivables' => $receivables,
             'reminders' => $reminders,
-            'reminderCutoff' => $reminderCutoff,
             'accounts' => $db->table('akun_kas')
                 ->where('is_active', true)
                 ->orderBy('account_type')

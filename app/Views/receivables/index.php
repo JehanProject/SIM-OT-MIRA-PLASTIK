@@ -28,14 +28,13 @@
 
     <section class="panel card reminders" aria-labelledby="reminders-title">
         <h2 id="reminders-title">Pengingat jatuh tempo</h2>
-        <p class="muted">Tagihan terlambat, jatuh tempo hari ini, atau jatuh tempo sampai <?= esc(date('d/m/Y', strtotime($reminderCutoff))) ?>.</p>
-        <?php if ($reminders['overdue'] === [] && $reminders['due_today'] === [] && $reminders['upcoming'] === []): ?>
+        <p class="muted">Pengingat dimulai pada hari jatuh tempo dan berulang setiap hari selama sisa tagihan masih ada.</p>
+        <?php if ($reminders['overdue'] === [] && $reminders['due_today'] === []): ?>
             <p class="muted" role="status">Tidak ada tagihan yang perlu ditindaklanjuti dalam periode ini.</p>
         <?php else: ?>
             <?php foreach ([
                 'overdue' => 'Terlambat',
                 'due_today' => 'Jatuh tempo hari ini',
-                'upcoming' => 'Jatuh tempo dalam 7 hari',
             ] as $reminderType => $reminderLabel): ?>
                 <?php if ($reminders[$reminderType] !== []): ?>
                     <div class="reminder-group <?= $reminderType === 'overdue' ? 'overdue' : '' ?>">

@@ -66,11 +66,11 @@ class Dashboard extends BaseController
                             - COALESCE(adjustments.adjusted_amount, 0.00),
                         0.00
                     )), 0.00) AS outstanding_amount,
-                    COUNT(CASE WHEN piutang.due_date < ? AND
+                    COUNT(CASE WHEN piutang.due_date <= ? AND
                         piutang.original_amount
                             - COALESCE(payments.paid_amount, 0.00)
                             - COALESCE(adjustments.adjusted_amount, 0.00) > 0
-                        THEN 1 END) AS overdue_count
+                        THEN 1 END) AS reminder_count
                  FROM piutang
                  LEFT JOIN (
                      SELECT receivable_id, SUM(amount) AS paid_amount
@@ -91,7 +91,7 @@ class Dashboard extends BaseController
             $metrics['retailCount'] = (int) ($sales['retail_count'] ?? 0);
             $metrics['wholesaleCount'] = (int) ($sales['wholesale_count'] ?? 0);
             $metrics['outstandingReceivables'] = (float) ($receivables['outstanding_amount'] ?? 0);
-            $metrics['overdueCount'] = (int) ($receivables['overdue_count'] ?? 0);
+            $metrics['reminderCount'] = (int) ($receivables['reminder_count'] ?? 0);
 
             $adjustments = $db->query(
                 "SELECT COUNT(*) AS pending_count,
