@@ -1,0 +1,81 @@
+main {
+    width: min(100% - 2rem, 1480px);
+    margin: 2rem auto;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.toolbar h1,
+.panel h2 {
+    margin: 0 0 .35rem;
+}
+
+.muted {
+    color: #64756c;
+}
+
+.panel {
+    margin-bottom: 1.25rem;
+    padding: 1.25rem;
+}
+
+.adjustment-items {
+    margin: .5rem 0 0;
+    padding-left: 1.1rem;
+    color: #64756c;
+}
+
+.adjustment-form > label,
+.refund-form > label,
+.decision-form > label {
+    display: block;
+    margin-top: .8rem;
+}
+
+.adjustment-form > h2 {
+    margin-top: 1.5rem;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+.decision-form,
+.refund-form {
+    display: grid;
+    gap: .5rem;
+    min-width: 220px;
+}
+
+.refund-pending,
+.refund-recorded {
+    display: block;
+    margin-bottom: .5rem;
+    color: #815b00;
+}
+
+.refund-recorded {
+    color: #168257;
+}
+
+@media (max-width: 700px) {
+    .toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    main {
+        width: min(100% - 1rem, 1480px);
+        margin: 1rem auto;
+    }
+
+    .panel {
+        padding: .85rem;
+    }
+}

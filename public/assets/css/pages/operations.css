@@ -1,0 +1,316 @@
+.ops-page {
+    display: grid;
+    gap: 1.15rem;
+}
+
+.ops-heading,
+.ops-panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.ops-eyebrow {
+    margin: 0 0 .35rem;
+    color: var(--app-primary);
+    font-size: .68rem;
+    font-weight: 750;
+    letter-spacing: .1em;
+}
+
+.ops-heading h1,
+.ops-panel h2 {
+    margin: 0;
+}
+
+.ops-subtitle {
+    margin: .35rem 0 0;
+    color: var(--app-muted);
+    font-size: .86rem;
+}
+
+.ops-heading .ops-subtitle {
+    max-width: 54rem;
+}
+
+.ops-panel {
+    min-width: 0;
+    padding: 1.15rem;
+    border: 1px solid var(--app-border);
+    border-radius: .9rem;
+    background: var(--app-surface);
+    box-shadow: var(--app-shadow);
+}
+
+.ops-panel-heading {
+    margin-bottom: 1rem;
+}
+
+.ops-panel-heading h2 {
+    font-size: 1rem;
+}
+
+.ops-filter {
+    display: flex;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-bottom: 1rem;
+}
+
+.ops-filter label,
+.ops-cash-form label {
+    display: grid;
+    min-width: 10rem;
+    gap: .35rem;
+    color: #566357;
+    font-size: .76rem;
+    font-weight: 650;
+}
+
+.ops-filter .ops-filter-search {
+    flex: 1 1 15rem;
+}
+
+.ops-filter .btn,
+.ops-cash-form .btn {
+    min-height: 2.4rem;
+}
+
+.ops-page .table {
+    font-size: .83rem;
+}
+
+.ops-page .table td,
+.ops-page .table th {
+    padding: .8rem .7rem;
+}
+
+.ops-cell-note {
+    display: block;
+    margin-top: .15rem;
+    color: var(--app-muted);
+    font-size: .72rem;
+}
+
+.ops-status {
+    display: inline-flex;
+    padding: .28rem .6rem;
+    border-radius: 999px;
+    background: #f1f4f2;
+    color: #5d6b61;
+    font-size: .7rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.ops-status.is-positive {
+    background: var(--app-primary-soft);
+    color: var(--app-primary);
+}
+
+.ops-empty {
+    padding: 2rem !important;
+    color: var(--app-muted);
+    text-align: center;
+}
+
+.ops-footnote {
+    margin: .85rem 0 0;
+    color: var(--app-muted);
+    font-size: .73rem;
+}
+
+.ops-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .85rem;
+}
+
+.ops-metrics-four {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.ops-metric {
+    display: grid;
+    min-width: 0;
+    gap: .3rem;
+    padding: 1.05rem;
+    border: 1px solid var(--app-border);
+    border-radius: .85rem;
+    background: var(--app-surface);
+    box-shadow: var(--app-shadow);
+}
+
+.ops-metric > span {
+    color: var(--app-muted);
+    font-size: .76rem;
+}
+
+.ops-metric strong {
+    color: var(--app-text);
+    font-size: clamp(1.1rem, 2vw, 1.55rem);
+    letter-spacing: -.03em;
+    overflow-wrap: anywhere;
+}
+
+.ops-metric small {
+    color: var(--app-muted);
+    font-size: .7rem;
+}
+
+.ops-metric-emphasis {
+    background: var(--app-primary-soft);
+}
+
+.ops-chart {
+    display: flex;
+    min-height: 13rem;
+    align-items: end;
+    gap: .55rem;
+    overflow-x: auto;
+    padding: 1rem .35rem .1rem;
+}
+
+.ops-chart-column {
+    display: grid;
+    min-width: 4.2rem;
+    height: 11.3rem;
+    flex: 1 0 4.2rem;
+    grid-template-rows: 1.6rem 1fr 1.4rem;
+    justify-items: center;
+    gap: .35rem;
+}
+
+.ops-chart-column strong {
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--app-muted);
+    font-size: .62rem;
+    font-weight: 550;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ops-chart-track {
+    display: flex;
+    width: min(2.2rem, 70%);
+    height: 100%;
+    align-items: end;
+    overflow: hidden;
+    border-radius: .45rem;
+    background: #f1f5f2;
+}
+
+.ops-chart-bar {
+    display: block;
+    width: 100%;
+    min-height: .15rem;
+    border-radius: .45rem;
+    background: linear-gradient(180deg, #37a777, var(--app-primary));
+}
+
+.ops-chart-column small {
+    color: var(--app-muted);
+    font-size: .68rem;
+}
+
+.ops-calculation {
+    display: grid;
+    gap: .2rem;
+    margin: 0;
+}
+
+.ops-calculation > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .75rem 0;
+    border-bottom: 1px solid var(--app-border);
+}
+
+.ops-calculation dt,
+.ops-calculation dd {
+    margin: 0;
+}
+
+.ops-calculation dd {
+    font-weight: 650;
+    text-align: right;
+}
+
+.ops-calculation .ops-calculation-total {
+    border-bottom: 0;
+    color: var(--app-primary);
+    font-weight: 750;
+}
+
+.ops-form-panel > summary {
+    cursor: pointer;
+    list-style: none;
+}
+
+.ops-form-panel > summary::-webkit-details-marker {
+    display: none;
+}
+
+.ops-cash-form {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .85rem;
+    padding-top: 1rem;
+}
+
+.ops-cash-description {
+    grid-column: span 2;
+}
+
+.ops-cash-form > .btn {
+    align-self: end;
+}
+
+.ops-json {
+    max-width: 28rem;
+    max-height: 12rem;
+    overflow: auto;
+    margin: .4rem 0 0;
+    padding: .55rem;
+    border-radius: .45rem;
+    background: #f5f7f6;
+    color: #4d5d52;
+    font-size: .7rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+    .ops-metrics-four {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .ops-heading,
+    .ops-panel-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .ops-metrics,
+    .ops-metrics-four {
+        grid-template-columns: 1fr;
+    }
+
+    .ops-cash-form {
+        grid-template-columns: 1fr;
+    }
+
+    .ops-cash-description {
+        grid-column: auto;
+    }
+
+    .ops-form-panel > summary .btn {
+        width: 100%;
+    }
+}

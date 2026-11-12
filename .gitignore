@@ -1,5 +1,7 @@
 /.env
 /env
+/.mcp.json
+/vendor/
 /writable/backups/
 /writable/cache/*
 !/writable/cache/index.html
@@ -11,3 +13,10 @@
 !/writable/session/index.html
 /writable/uploads/*
 !/writable/uploads/index.html
+/prototype/
+/prototype.zip
+/ALUR_KERJA_DAN_PROGRES.md
+/Untitled.png
+/out_*.txt
+/public/Laporan_MPSI_Revisi*.pdf
+/public/Laporan_MPSI_Revisi*.docx

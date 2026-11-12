@@ -1,0 +1,20 @@
+:root { font-family: inherit; color: var(--app-text); background: var(--app-background); }
+        * { box-sizing: border-box; }
+        body { margin: 0; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 1rem max(1rem, calc((100% - 1000px) / 2)); background: var(--app-primary); color: #fff; }
+        header a { color: #fff; text-decoration: none; font-weight: 700; }
+        main { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+        .panel { margin: 1rem 0; padding: 1.25rem; border-radius: .75rem; background: #fff; box-shadow: 0 8px 28px #0f172a12; }
+        .toolbar { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .75rem; }
+        label { display: block; margin: .5rem 0 .25rem; font-weight: 600; }
+        input, textarea { width: 100%; padding: .6rem; border: 1px solid #cbd5e1; border-radius: .4rem; font: inherit; }
+        button, .button { display: inline-block; padding: .6rem .85rem; border: 0; border-radius: .4rem; background: var(--app-primary); color: #fff; font: inherit; text-decoration: none; font-weight: 700; cursor: pointer; }
+        .secondary { background: #475569; } .danger { background: #b91c1c; }
+        .notice { padding: .75rem 1rem; border-radius: .5rem; background: #dcfce7; color: #166534; }
+        .error { padding: .75rem 1rem; border-radius: .5rem; background: #fef2f2; color: #991b1b; }
+        .muted { color: #64748b; font-size: .9rem; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: .7rem; border-bottom: 1px solid #e2e8f0; text-align: left; }
+        @media (max-width: 700px) { header { padding: 1rem; } main { margin-top: 1rem; } }

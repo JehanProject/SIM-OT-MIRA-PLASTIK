@@ -1,110 +1,104 @@
-# CodeIgniter 4 Development
+# Sistem Operasional Toko Mira Plastik
 
-[![PHPUnit](https://github.com/codeigniter4/CodeIgniter4/actions/workflows/test-phpunit.yml/badge.svg)](https://github.com/codeigniter4/CodeIgniter4/actions/workflows/test-phpunit.yml)
-[![PHPStan](https://github.com/codeigniter4/CodeIgniter4/actions/workflows/test-phpstan.yml/badge.svg)](https://github.com/codeigniter4/CodeIgniter4/actions/workflows/test-phpstan.yml)
-[![Psalm](https://github.com/codeigniter4/CodeIgniter4/actions/workflows/test-psalm.yml/badge.svg)](https://github.com/codeigniter4/CodeIgniter4/actions/workflows/test-psalm.yml)
-[![Coverage Status](https://coveralls.io/repos/github/codeigniter4/CodeIgniter4/badge.svg?branch=develop)](https://coveralls.io/github/codeigniter4/CodeIgniter4?branch=develop)
-[![Downloads](https://poser.pugx.org/codeigniter4/framework/downloads)](https://packagist.org/packages/codeigniter4/framework)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/codeigniter4/CodeIgniter4)](https://packagist.org/packages/codeigniter4/framework)
-[![GitHub stars](https://img.shields.io/github/stars/codeigniter4/CodeIgniter4)](https://packagist.org/packages/codeigniter4/framework)
-[![GitHub license](https://img.shields.io/github/license/codeigniter4/CodeIgniter4)](https://github.com/codeigniter4/CodeIgniter4/blob/develop/LICENSE)
-[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/codeigniter4/CodeIgniter4/pulls)
-<br>
+Aplikasi internal untuk mengelola barang, stok, penjualan kasir, pembayaran, dan piutang Toko Mira Plastik. Aplikasi dibangun dengan CodeIgniter 4 dan menggunakan MySQL atau MariaDB.
 
-## What is CodeIgniter?
+## Fitur
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+- Login dengan peran `OWNER`, `KASIR`, dan `STAF_GUDANG`.
+- Pengelolaan barang, kategori, satuan, harga, serta status aktif.
+- Pencatatan saldo awal dan penerimaan barang ke gudang beserta ledger stok.
+- Checkout tunai, transfer, dan bon grosir; pembayaran bon dicatat melalui modul piutang.
+- Pendaftaran pelanggan grosir, pengisian plafon awal, dan perubahan kebijakan tenor Bon dapat dilakukan Kasir; perubahan plafon setelah pendaftaran tetap dikelola Owner.
+- Riwayat transaksi, mutasi stok Toko/Gudang, riwayat pergerakan stok, laporan penjualan, dan laporan laba/rugi tahunan.
+- Data distributor, pengelolaan akun, log aktivitas, arsip historis, serta backup dan pemulihan data khusus Owner.
+- Profil akun dapat dikelola sendiri dari navbar. Kotak notifikasi menyimpan dan melacak status baca; Owner menerima ringkasan operasional, Kasir menerima info stok Toko/pengajuan, dan Staf Gudang menerima info penerimaan serta stok menipis.
+- Pencatatan Arus Kas manual masuk ke ledger akun kas/bank dan ikut dihitung pada laporan yang relevan.
+- Metode Bon dapat dipilih hanya untuk penjualan grosir. Checkout Bon tetap menunggu pelanggan aktif dan kebijakan tenor aktif; pelanggan dapat didaftarkan langsung dari kasir.
 
-This repository holds the source code for CodeIgniter 4 only.
-Version 4 is a complete rewrite to bring the quality and the code into a more modern version,
-while still keeping as many of the things intact that has made people love the framework over the years.
+## Aset Antarmuka
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+Bootstrap 5.3.8 disimpan lokal di `public/assets/vendor/bootstrap`. CSS bersama berada di `public/assets/css/app.css`, sedangkan CSS per halaman berada di `public/assets/css/pages`. JavaScript bersama dan per halaman berada di `public/assets/js`.
 
-### Documentation
+## Persyaratan
 
-The [User Guide](https://codeigniter.com/user_guide/) is the primary documentation for CodeIgniter 4.
+- PHP 8.2 atau lebih baru, dengan ekstensi `intl`, `mbstring`, dan `mysqli`.
+- Composer.
+- MySQL 8.0.16+ atau MariaDB 10.4+.
 
-You will also find the [current **in-progress** User Guide](https://codeigniter4.github.io/CodeIgniter4/).
-As with the rest of the framework, it is a work in progress, and will see changes over time to structure, explanations, etc.
+## Menjalankan Secara Lokal
 
-You might also be interested in the [API documentation](https://codeigniter4.github.io/api/) for the framework components.
+1. Pasang dependency PHP:
 
-## Important Change with index.php
+   ```powershell
+   composer install
+   ```
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+2. Salin file konfigurasi contoh dan edit `.env`:
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+   ```powershell
+   Copy-Item env .env
+   ```
 
-**Please** read the user guide for a better explanation of how CI4 works!
+   Atur environment lokal, URL aplikasi, dan koneksi database. Contoh nilai koneksi:
 
-## Repository Management
+   ```ini
+   CI_ENVIRONMENT = development
+   app.baseURL = 'http://localhost:8080/'
+   database.default.hostname = localhost
+   database.default.database = mira_plastik
+   database.default.username = USER_DATABASE
+   database.default.password = PASSWORD_DATABASE
+   database.default.DBDriver = MySQLi
+   database.default.port = 3306
+   ```
 
-CodeIgniter is developed completely on a volunteer basis. As such, please give up to 7 days
-for your issues to be reviewed. If you haven't heard from one of the team in that time period,
-feel free to leave a comment on the issue so that it gets brought back to our attention.
+   Ganti username dan password dengan kredensial lokal Anda. Jangan masukkan `.env` atau kredensial ke kontrol versi.
 
-> [!IMPORTANT]
-> We use GitHub issues to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-> We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-> FEATURE REQUESTS.
+3. Buat skema dan data awal dengan mengimpor [`mira_plastik.sql`](app/Database/mira_plastik.sql) ke MySQL/MariaDB. Skrip ini membuat database `mira_plastik` jika belum ada.
 
-If you raise an issue here that pertains to support or a feature request, it will
-be closed! If you are not sure if you have found a bug, raise a thread on the forum first -
-someone else may have encountered the same thing.
+   Untuk database lama, jalankan skrip pembaruan satu kali sesuai kondisi skema: tambahkan satuan eceran dengan [`update_satuan_eceran_grosir.sql`](app/Database/update_satuan_eceran_grosir.sql), jenis satuan dengan [`update_jenis_penjualan_satuan.sql`](app/Database/update_jenis_penjualan_satuan.sql), lalu faktor dan snapshot konversi dengan [`update_konversi_satuan_eceran.sql`](app/Database/update_konversi_satuan_eceran.sql). Jika migrasi konversi sudah pernah dijalankan dengan constraint snapshot lama yang mewajibkan faktor positif, jalankan [`repair_konversi_satuan_eceran.sql`](app/Database/repair_konversi_satuan_eceran.sql) satu kali sebagai gantinya. Untuk mengaktifkan status piutang yang selesai karena koreksi retur, jalankan [`update_sale_adjustment_workflow.sql`](app/Database/update_sale_adjustment_workflow.sql) satu kali. Untuk pencatatan Arus Kas manual, jalankan [`update_manual_cash_transactions.sql`](app/Database/update_manual_cash_transactions.sql) satu kali. Untuk kotak notifikasi pengguna, jalankan [`update_user_notifications.sql`](app/Database/update_user_notifications.sql) satu kali. Jangan jalankan skrip pembaruan pada database baru yang sudah dibuat dari skema terkini.
 
-Before raising a new GitHub issue, please check that your bug hasn't already
-been reported or fixed.
+4. Buat akun Owner pertama melalui terminal. Perintah akan meminta nama dan username, lalu menampilkan kata sandi yang dibuat secara acak. Simpan kata sandi tersebut karena hanya ditampilkan sekali.
 
-We use pull requests (PRs) for CONTRIBUTIONS to the repository.
-We are looking for contributions that address one of the reported bugs or
-approved work packages.
+   ```powershell
+   php spark owner:create
+   ```
 
-Do not use a PR as a form of feature request.
-Unsolicited contributions will only be considered if they fit nicely
-into the framework roadmap.
-Remember that some components that were part of CodeIgniter 3 are being moved
-to optional packages, with their own repository.
+5. Jalankan server pengembangan:
 
-## Contributing
+   ```powershell
+   php spark serve --host 127.0.0.1 --port 8080
+   ```
 
-We **are** accepting contributions from the community! It doesn't matter whether you can code, write documentation, or help find bugs,
-all contributions are welcome.
+   Buka halaman login di <http://localhost:8080/index.php/login>.
 
-Please read the [*Contributing to CodeIgniter*](https://github.com/codeigniter4/CodeIgniter4/blob/develop/contributing/README.md).
+## Alur Penggunaan
 
-CodeIgniter has had thousands on contributions from people since its creation. This project would not be what it is without them.
+1. Login dengan akun Owner, lalu buat kategori dan satuan eceran/grosir.
+2. Buat barang, tentukan harga dan batas stok, kemudian catat saldo awal atau penerimaan barang.
+3. Gunakan halaman kasir untuk penjualan tunai/transfer atau bon grosir.
+4. Atur kebijakan tenor dan data pelanggan sebelum mengaktifkan transaksi bon.
+5. Catat cicilan atau pelunasan melalui halaman piutang.
+6. Dari struk, ajukan Void/Retur; Owner/Kasir memutuskan melalui Persetujuan Void/Retur. Refund tunai/transfer dicatat satu kali penuh setelah uang benar-benar dikembalikan.
 
-<a href="https://github.com/codeigniter4/CodeIgniter4/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=codeigniter4/CodeIgniter4" />
-</a>
+Aturan pengingat H-3, jatuh tempo hari ini, keterlambatan, serta skenario uji
+tagihan lunas dan cicilan sebagian dijelaskan di
+[panduan pengingat piutang](docs/receivable-reminder-rules.md).
 
-Made with [contrib.rocks](https://contrib.rocks).
+Rute utama: `/login`, `/dashboard`, `/profil`, `/notifikasi`, `/barang`, `/stok`, `/stok/mutasi`, `/stok/riwayat`, `/kasir`, `/transaksi`, `/piutang`, `/persetujuan`, `/laporan/penjualan`, `/laporan/laba-rugi`, `/arus-kas`, `/distributor`, `/pengguna`, `/aktivitas`, `/arsip`, dan `/backup`.
 
-## Server Requirements
+## Batasan Saat Ini
 
-PHP version 8.2 or higher is required, with the following extensions installed:
+Checkout sudah mengonversi satuan eceran ke satuan stok dan menyimpan snapshot jumlah serta satuan transaksi. Perilaku konversi, harga, alokasi lokasi, struk, dan rollback sudah diuji end-to-end dengan fixture QA; constraint aktif sudah diselaraskan. Jangan mengaktifkan penjualan eceran untuk barang yang faktor konversinya belum diketahui dan terverifikasi.
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+Alur checkout bon, pembayaran cicilan/pelunasan, serta pengujian plafon dan tenor belum divalidasi menyeluruh dengan data uji.
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - The end of life date for PHP 8.1 was December 31, 2025.
-> - If you are still using a PHP version below 8.2, you should upgrade immediately.
-> - The end of life date for PHP 8.2 will be December 31, 2026.
+Alur pengajuan dan persetujuan Void/Retur telah ditambahkan. Sebelum digunakan pada transaksi nyata, validasi alur ini dengan data uji yang disetujui; terutama Void tunai/transfer, retur parsial, Bon yang sudah dibayar sebagian/lunas, penolakan, dan pencatatan refund satu kali.
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+## Deployment dan Keamanan
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
-
-## Running CodeIgniter Tests
-
-Information on running the CodeIgniter test suite can be found in the [README.md](tests/README.md) file in the tests directory.
+- Arahkan document root web server ke folder `public`, bukan ke root proyek.
+- Gunakan `CI_ENVIRONMENT = production` dan HTTPS untuk deployment.
+- Batasi akses ke `.env` dan folder `writable`; jangan menyimpan kredensial database di file yang dapat diunduh publik.
+- Cadangkan database secara berkala sebelum menjalankan perubahan skema atau operasi data.
+- Backup JSON dapat dibuat manual oleh Owner dari halaman **Backup & Restore** atau melalui `php spark backup:create`. File disimpan di `writable/backups`, hanya dapat diakses Owner, dan perintah CLI membersihkan backup yang berumur lebih dari 30 hari. Untuk backup harian otomatis, jadwalkan perintah CLI tersebut melalui Task Scheduler Windows atau cron; aplikasi tidak mengaktifkan scheduler sistem secara otomatis. Pemulihan mensyaratkan konfirmasi teks dan membuat backup pengaman terlebih dahulu.
