@@ -1,0 +1,105 @@
+.transfer-heading {
+    margin-bottom: 1.15rem;
+}
+
+.transfer-heading h1 {
+    margin: 0;
+}
+
+.transfer-heading p:last-child {
+    margin: .35rem 0 0;
+}
+
+.transfer-eyebrow {
+    margin: 0 0 .35rem !important;
+    color: var(--app-primary) !important;
+    font-size: .68rem;
+    font-weight: 750;
+    letter-spacing: .1em;
+}
+
+.transfer-panel {
+    padding: 1.2rem;
+    border: 1px solid var(--app-border);
+    border-radius: .9rem;
+    background: #fff;
+    box-shadow: var(--app-shadow);
+}
+
+.transfer-panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.transfer-panel-heading h2 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.transfer-panel-heading p {
+    margin: .3rem 0 0;
+    color: var(--app-muted);
+    font-size: .8rem;
+}
+
+.transfer-route {
+    padding: .45rem .7rem;
+    border-radius: 999px;
+    background: var(--app-primary-soft);
+    color: var(--app-primary);
+    font-size: .75rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.transfer-fields {
+    display: grid;
+    grid-template-columns: minmax(12rem, .7fr) minmax(0, 1.3fr);
+    gap: .8rem;
+}
+
+.transfer-fields label {
+    display: grid;
+    gap: .4rem;
+    margin-bottom: 1.1rem;
+    color: #566357;
+    font-size: .78rem;
+    font-weight: 650;
+}
+
+.transfer-fields .transfer-notes {
+    max-width: 42rem;
+}
+
+.transfer-panel th {
+    white-space: nowrap;
+}
+
+.transfer-hint {
+    color: var(--app-muted);
+    font-size: .76rem;
+}
+
+.transfer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+}
+
+@media (max-width: 650px) {
+    .transfer-panel {
+        padding: .9rem;
+    }
+
+    .transfer-panel-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .transfer-fields {
+        grid-template-columns: 1fr;
+    }
+}

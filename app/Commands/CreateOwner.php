@@ -8,77 +8,73 @@ use RuntimeException;
 
 class CreateOwner extends BaseCommand
 {
-    protected $group = 'Application';
-    protected $name = 'owner:create';
-    protected $description = 'Create the initial production Owner account using a password supplied through the process environment.';
-    protected $usage = 'owner:create';
+    protected $group       = 'Setup';
+    protected $name        = 'owner:create';
+    protected $description = 'Create the initial Owner account with a generated password.';
+    protected $usage       = 'owner:create';
 
     public function run(array $params)
     {
-        if (ENVIRONMENT !== 'production') {
-            CLI::error('This command is reserved for production Owner provisioning.');
-
-            return EXIT_ERROR;
-        }
-
         $db = db_connect();
-        if ((int) $db->table('users')->where('role', 'Owner')->countAllResults() > 0) {
-            CLI::error('An Owner account already exists. Use the authenticated account-management screen instead.');
+
+        $ownerRole = $db->table('peran')
+            ->where('role_code', 'OWNER')
+            ->get()
+            ->getRowArray();
+
+        if ($ownerRole === null) {
+            CLI::error('Role OWNER was not found. Import the database schema first.');
 
             return EXIT_ERROR;
         }
 
-        $name = trim(CLI::prompt('Owner full name'));
-        if ($name === '' || mb_strlen($name) > 80) {
-            CLI::error('Owner full name must contain 1 to 80 characters.');
+        $existingOwner = $db->table('pengguna')
+            ->where('role_id', $ownerRole['role_id'])
+            ->countAllResults();
+
+        if ($existingOwner > 0) {
+            CLI::error('An Owner account already exists. This setup command can only be used once.');
 
             return EXIT_ERROR;
         }
 
-        $username = mb_strtolower(trim(CLI::prompt('Owner username')));
-        if (! preg_match('/^[a-z0-9._-]{3,32}$/', $username)) {
-            CLI::error('Username must be 3-32 characters using letters, numbers, dots, underscores, or hyphens.');
+        $fullName = CLI::prompt('Owner full name', null, 'required|min_length[2]|max_length[150]');
+        $username = CLI::prompt(
+            'Username (letters, numbers, dots, dashes, or underscores)',
+            null,
+            'required|alpha_numeric_punct|min_length[3]|max_length[100]',
+        );
+
+        if ($db->table('pengguna')->where('username', $username)->countAllResults() > 0) {
+            CLI::error('That username is already in use. Run the command again with a different username.');
 
             return EXIT_ERROR;
         }
 
-        $password = getenv('MIRA_OWNER_PASSWORD');
-        if (! is_string($password) || strlen($password) < 12 || strlen($password) > 72) {
-            CLI::error('Set MIRA_OWNER_PASSWORD through the deployment secret manager; it must contain 12-72 bytes.');
+        $plainPassword = bin2hex(random_bytes(24));
+        $passwordHash  = password_hash($plainPassword, PASSWORD_DEFAULT);
 
-            return EXIT_ERROR;
-        }
-        $now = date('Y-m-d H:i:s');
-
-        if (! $db->transBegin()) {
-            throw new RuntimeException('A transaction could not be started for Owner provisioning.');
-        }
-        try {
-            if ((int) $db->table('users')->where('role', 'Owner')->countAllResults() > 0) {
-                throw new RuntimeException('An Owner account was created concurrently; no account was added.');
-            }
-            if ($db->table('users')->where('username', $username)->countAllResults() > 0) {
-                throw new RuntimeException('That username already exists; no account was added.');
-            }
-            $db->table('users')->insert([
-                'username'      => $username,
-                'full_name'     => $name,
-                'password_hash' => password_hash($password, PASSWORD_BCRYPT),
-                'role'          => 'Owner',
-                'active'        => true,
-                'created_at'    => $now,
-                'updated_at'    => $now,
-            ]);
-            if (! $db->transStatus() || ! $db->transCommit()) {
-                throw new RuntimeException('Owner account could not be committed.');
-            }
-        } catch (\Throwable $error) {
-            $db->transRollback();
-            throw $error;
+        if ($passwordHash === false) {
+            throw new RuntimeException('Could not securely hash the Owner password.');
         }
 
-        CLI::write('Owner account created successfully. The password was not printed.', 'green');
-        CLI::write('Remove MIRA_OWNER_PASSWORD from the process environment; keep the credential in an approved password manager.');
+        $inserted = $db->table('pengguna')->insert([
+            'role_id'                => $ownerRole['role_id'],
+            'username'               => $username,
+            'password_hash'          => $passwordHash,
+            'full_name'              => $fullName,
+            'failed_login_attempts'  => 0,
+            'is_active'              => true,
+        ]);
+
+        if (! $inserted) {
+            throw new RuntimeException('Could not create the Owner account.');
+        }
+
+        CLI::newLine();
+        CLI::write('Owner account created. Save this generated password now; it will not be shown again.', 'green');
+        CLI::write('Username: ' . $username);
+        CLI::write('Password: ' . $plainPassword);
 
         return EXIT_SUCCESS;
     }

@@ -26,10 +26,10 @@ class Database extends Config
      */
     public array $default = [
         'DSN'          => '',
-        'hostname'     => '127.0.0.1',
+        'hostname'     => 'localhost',
         'username'     => '',
         'password'     => '',
-        'database'     => 'mira_plastik',
+        'database'     => '',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
@@ -193,13 +193,6 @@ class Database extends Config
     public function __construct()
     {
         parent::__construct();
-
-        $this->default['hostname'] = env('database.default.hostname', '127.0.0.1');
-        $this->default['username'] = env('database.default.username', '');
-        $this->default['password'] = env('database.default.password', '');
-        $this->default['database'] = env('database.default.database', 'mira_plastik');
-        $this->default['DBDriver'] = env('database.default.DBDriver', 'MySQLi');
-        $this->default['port'] = (int) env('database.default.port', 3306);
 
         // Ensure that we always set the database group to 'tests' if
         // we are currently running an automated test suite, so that
