@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Libraries\ReceivableReminderPolicy;
+
 class Dashboard extends BaseController
 {
     public function index(): string
@@ -29,6 +31,9 @@ class Dashboard extends BaseController
             'needsRestock' => (int) ($stock['needs_restock'] ?? 0),
         ];
         if ($canViewFinancials) {
+            $reminderCutoff = (new \DateTimeImmutable($today))
+                ->modify('+' . ReceivableReminderPolicy::H3_DAYS . ' days')
+                ->format('Y-m-d');
             $salesParams = [
                 $today . ' 00:00:00',
                 (new \DateTimeImmutable($today))->modify('+1 day')->format('Y-m-d') . ' 00:00:00',
@@ -66,11 +71,11 @@ class Dashboard extends BaseController
                             - COALESCE(adjustments.adjusted_amount, 0.00),
                         0.00
                     )), 0.00) AS outstanding_amount,
-                    COUNT(CASE WHEN piutang.due_date < ? AND
+                    COUNT(CASE WHEN piutang.due_date <= ? AND
                         piutang.original_amount
                             - COALESCE(payments.paid_amount, 0.00)
                             - COALESCE(adjustments.adjusted_amount, 0.00) > 0
-                        THEN 1 END) AS overdue_count
+                        THEN 1 END) AS reminder_count
                  FROM piutang
                  LEFT JOIN (
                      SELECT receivable_id, SUM(amount) AS paid_amount
@@ -83,7 +88,7 @@ class Dashboard extends BaseController
                      GROUP BY receivable_id
                  ) AS adjustments ON adjustments.receivable_id = piutang.receivable_id
                  WHERE piutang.status IN ('OPEN', 'PARTIALLY_PAID')",
-                [$today],
+                [$reminderCutoff],
             )->getRowArray();
 
             $metrics['saleCount'] = (int) ($sales['sale_count'] ?? 0);
@@ -91,7 +96,7 @@ class Dashboard extends BaseController
             $metrics['retailCount'] = (int) ($sales['retail_count'] ?? 0);
             $metrics['wholesaleCount'] = (int) ($sales['wholesale_count'] ?? 0);
             $metrics['outstandingReceivables'] = (float) ($receivables['outstanding_amount'] ?? 0);
-            $metrics['overdueCount'] = (int) ($receivables['overdue_count'] ?? 0);
+            $metrics['reminderCount'] = (int) ($receivables['reminder_count'] ?? 0);
 
             $adjustments = $db->query(
                 "SELECT COUNT(*) AS pending_count,
